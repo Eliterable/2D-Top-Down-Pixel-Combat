@@ -10,6 +10,7 @@ public class PlayerController : Singleton<PlayerController>
     [SerializeField] TrailRenderer dashTrailRenderer;
     [SerializeField] private Transform weaponCollider;
 
+    private KnockBack knockBack;
     private PlayerControls playerControls;
     private Vector2 movement;
     private Rigidbody2D rb;
@@ -26,6 +27,7 @@ public class PlayerController : Singleton<PlayerController>
         rb = GetComponent<Rigidbody2D>();
         myAnimator = GetComponent<Animator>();
         sr = GetComponent<SpriteRenderer>();
+        knockBack = GetComponent<KnockBack>();
 
 
     }
@@ -68,6 +70,10 @@ public class PlayerController : Singleton<PlayerController>
 
     void Move()
     {
+        if (knockBack.gettingKnockedBack)
+        {
+            return;
+        }
         rb.MovePosition(rb.position + movement * (movespeed * Time.fixedDeltaTime));
     }
 

@@ -6,13 +6,14 @@ public class EnemyPathfinding : MonoBehaviour
 {
     [SerializeField] float movespeed = 2f;
 
-
+    SpriteRenderer sr;
     private Rigidbody2D rb;
     private Vector2 moveDir;
     KnockBack kn;
 
     private void Awake()
     {
+        sr = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
         kn = GetComponent<KnockBack>();
     }
@@ -29,6 +30,18 @@ public class EnemyPathfinding : MonoBehaviour
     public void MoveTo(Vector2 targetPosition)
     {
         moveDir = targetPosition;
+        if (moveDir.x < 0)
+        {
+            sr.flipX = true;
+        }
+        else
+        {
+            sr.flipX = false;
+        }
+    }
+    public void StopMoving()
+    {
+        moveDir = Vector3.zero;
     }
 
 
