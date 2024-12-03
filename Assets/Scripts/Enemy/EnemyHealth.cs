@@ -11,12 +11,14 @@ public class EnemyHealth : MonoBehaviour
     KnockBack kn;
     Flash flash;
     GameObject slimeDeathVFX;
+    PickUpSpawner pickUpSpawner;
 
 
     private void Awake()
     {
         flash = GetComponent<Flash>();
         kn = GetComponent<KnockBack>();
+        pickUpSpawner = GetComponent<PickUpSpawner>();
     }
     private void Start()
     {
@@ -36,6 +38,7 @@ public class EnemyHealth : MonoBehaviour
         if (currentHealth <= 0)
         {
             slimeDeathVFX = Instantiate(deathVFXPrefab, transform.position, Quaternion.identity);
+            pickUpSpawner.DropItems();
             Destroy(gameObject, .1f);
         }
     }

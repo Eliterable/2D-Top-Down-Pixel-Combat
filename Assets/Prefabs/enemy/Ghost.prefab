@@ -104,6 +104,7 @@ GameObject:
   - component: {fileID: 6744225464678721434}
   - component: {fileID: 4942908670211512429}
   - component: {fileID: 4573871518702862604}
+  - component: {fileID: -5816992426562943417}
   m_Layer: 0
   m_Name: Ghost
   m_TagString: Untagged
@@ -238,9 +239,9 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.0038290587, y: -0.03064764}
-  m_Size: {x: 0.9043151, y: 0.69744164}
-  m_Direction: 1
+  m_Offset: {x: 0.003829062, y: 0.18697631}
+  m_Size: {x: 0.9043151, y: 1.1243842}
+  m_Direction: 0
 --- !u!114 &3605514223736147647
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -257,6 +258,7 @@ MonoBehaviour:
   attackRange: 5
   enemyType: {fileID: 4573871518702862604}
   attackCooldown: 2
+  stopMoveingWhileAttacking: 1
 --- !u!114 &4585173321689731953
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -349,3 +351,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 2779907003441927884, guid: 418b59958e1d0e7428ceb2247ca97a96, type: 3}
+  bulletMoveSpeed: 6
+  bustCount: 3
+  projectilesPerBurst: 1
+  angleSpreed: 60
+  startingDistance: 0.1
+  timeBetweenBursts: 0.4
+  restTime: 2
+  stagger: 1
+  oscillate: 1
+--- !u!114 &-5816992426562943417
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6577246435592772357}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a494a9360a14b1459d653c3f9bbfadf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  goldCoin: {fileID: 6355632109181320634, guid: d279ed199840382449f6a1a91ee0b8ac, type: 3}
+  healthGlobe: {fileID: 6355632109181320634, guid: e0d290b1fe3d9c342ac69f4e78fe0144, type: 3}
+  staminaGlobe: {fileID: 6355632109181320634, guid: ef7cac53d1b5e8b428ba47178d19ed29, type: 3}

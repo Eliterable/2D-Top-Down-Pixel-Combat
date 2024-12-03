@@ -23,29 +23,32 @@ public class Arrow : MonoBehaviour
     {
         this.projectalRange = projectalRange;
     }
-    public void UpdateMoveSpeed(float projectalRange)
+    public void UpdateMoveSpeed(float moveSpeed)
     {
-        this.projectalRange = projectalRange;
+        this.moveSpeed = moveSpeed;
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
         EnemyHealth enemyHealth = other.gameObject.GetComponent<EnemyHealth>();
         Indestructible indestructible = other.gameObject.GetComponent<Indestructible>();
         PlayerHealth player = other.gameObject.GetComponent<PlayerHealth>();
+
         if (!other.isTrigger && (enemyHealth || indestructible || player))
         {
-            if (player && isEnemyProjectile || (enemyHealth && !isEnemyProjectile))
+            if ((player && isEnemyProjectile) || (enemyHealth && !isEnemyProjectile))
             {
-                player.TakeDamage(1, transform);
+                player?.TakeDamage(1, transform);
                 Instantiate(particleOnHitVFX, transform.position, transform.rotation);
                 Destroy(gameObject);
             }
             else if (!other.isTrigger && indestructible)
+            {
                 Instantiate(particleOnHitVFX, transform.position, transform.rotation);
-            Destroy(gameObject);
+                Destroy(gameObject);
+            }
         }
-
     }
+
     private void DetectFireDistance()
     {
         if (Vector3.Distance(transform.position, startPosition) > projectalRange)

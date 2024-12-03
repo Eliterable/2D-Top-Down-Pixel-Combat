@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class Shooter : MonoBehaviour, IEnemy
@@ -7,9 +8,32 @@ public class Shooter : MonoBehaviour, IEnemy
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private float bulletMoveSpeed = 1;
     [SerializeField] private int bustCount;
+    [SerializeField] private int projectilesPerBurst;
+    [SerializeField][Range(0, 359)] private float angleSpreed;
+    [SerializeField] private float startingDistance = 0.1f;
     [SerializeField] private float timeBetweenBursts;
     [SerializeField] private float restTime = 1f;
+    [SerializeField] private bool stagger;
+    [SerializeField] private bool oscillate;
     private bool isShooting = false;
+
+    private void OnValidate()
+    {
+        if (oscillate) { stagger = true; }
+        if (!oscillate) { stagger = false; }
+        if (projectilesPerBurst < 1) { projectilesPerBurst = 1; }
+        if (bustCount < 1) { bustCount = 1; }
+        if (timeBetweenBursts < 0.1f) { timeBetweenBursts = 0.1f; }
+        if (restTime < 0.1f) { restTime = 0.1f; }
+        if (startingDistance < 0.1f) { startingDistance = 0.1f; }
+        if (angleSpreed == 0) { projectilesPerBurst = 1; }
+        if (bulletMoveSpeed <= 0) { bulletMoveSpeed = 0.1f; }
+    }
+
+
+
+
+
     public void Attack()
     {
         if (!isShooting)
@@ -19,22 +43,97 @@ public class Shooter : MonoBehaviour, IEnemy
     }
     private IEnumerator ShootRoutine()
     {
+        isShooting = true;
+        float startAngle, currentAngle, angleStep, endAngle;
+        float timeBetweenProjectiles = 0f;
+
+        TargetConeOfInfluence(out startAngle, out currentAngle, out angleStep, out endAngle);
+        if (stagger)
+        {
+            timeBetweenProjectiles = timeBetweenBursts / projectilesPerBurst;
+        }
+
         for (int i = 0; i < bustCount; i++)
         {
-            isShooting = true;
-            Vector2 targetDirection = PlayerController.Instance.transform.position - transform.position;
-            GameObject newBullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
-            newBullet.transform.right = targetDirection;
-
-            if (newBullet.TryGetComponent(out Arrow arrow))
+            if (!oscillate)
             {
-                arrow.UpdateMoveSpeed(bulletMoveSpeed);
+                TargetConeOfInfluence(out startAngle, out currentAngle, out angleStep, out endAngle);
             }
-            yield return new WaitForSeconds(timeBetweenBursts);
+
+
+
+
+            if (oscillate && i % 2 != 1)
+            {
+                TargetConeOfInfluence(out startAngle, out currentAngle, out angleStep, out endAngle);
+            }
+            else if (oscillate)
+            {
+                currentAngle = endAngle;
+                endAngle = startAngle;
+                startAngle = currentAngle;
+                angleStep *= -1;
+            }
+
+            for (int j = 0; j < projectilesPerBurst; j++)
+            {
+                Vector2 pos = FindBulletSpawnPos(currentAngle);
+                GameObject newBullet = Instantiate(bulletPrefab, pos, Quaternion.identity);
+                newBullet.transform.right = newBullet.transform.position - transform.position;
+
+                if (newBullet.TryGetComponent(out Arrow arrow))
+                {
+                    arrow.UpdateMoveSpeed(bulletMoveSpeed);
+                }
+                currentAngle += angleStep;
+                if (stagger)
+                {
+                    yield return new WaitForSeconds(timeBetweenProjectiles);
+                }
+            }
+            currentAngle = startAngle;
+            if (!stagger)
+            {
+                yield return new WaitForSeconds(timeBetweenBursts);
+            }
+
+
         }
 
 
         yield return new WaitForSeconds(restTime);
         isShooting = false;
     }
+
+    private void TargetConeOfInfluence(out float startAngle, out float currentAngle, out float angleStep, out float endAngle)
+    {
+        Vector2 targetDirection = PlayerController.Instance.transform.position - transform.position;
+        float targetAngle = Mathf.Atan2(targetDirection.y, targetDirection.x) * Mathf.Rad2Deg;
+        startAngle = targetAngle;
+        endAngle = targetAngle;
+        currentAngle = targetAngle;
+        float halfAngleSpreed = 0f;
+        angleStep = 0f;
+        if (angleSpreed != 0)
+        {
+            angleStep = angleSpreed / (projectilesPerBurst - 1);
+            halfAngleSpreed = angleSpreed / 2f;
+            startAngle = targetAngle - halfAngleSpreed;
+            endAngle = targetAngle + halfAngleSpreed;
+            currentAngle = startAngle;
+        }
+    }
+
+    private Vector2 FindBulletSpawnPos(float currentAngle)
+    {
+        float x = transform.position.x + startingDistance * Mathf.Cos(currentAngle * Mathf.Deg2Rad);
+        float y = transform.position.y + startingDistance * Mathf.Sin(currentAngle * Mathf.Deg2Rad);
+
+
+        Vector2 pos = new Vector2(x, y);
+        return pos;
+    }
+
+
+
 }

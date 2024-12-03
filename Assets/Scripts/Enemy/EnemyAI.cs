@@ -5,7 +5,7 @@ using UnityEngine;
 public class EnemyAI : MonoBehaviour
 {
     [SerializeField] float waitBeforeMove = 2f;
-    [SerializeField] float attackRange = 5f;
+    [SerializeField] float attackRange = 0f;
     [SerializeField] private MonoBehaviour enemyType;
     private bool canAttack = true;
     [SerializeField] private float attackCooldown = 2f;

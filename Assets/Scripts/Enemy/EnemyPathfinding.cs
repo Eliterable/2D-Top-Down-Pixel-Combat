@@ -34,7 +34,7 @@ public class EnemyPathfinding : MonoBehaviour
         {
             sr.flipX = true;
         }
-        else
+        else if (moveDir.x > 0)
         {
             sr.flipX = false;
         }

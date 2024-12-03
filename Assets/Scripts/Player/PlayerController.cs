@@ -35,11 +35,16 @@ public class PlayerController : Singleton<PlayerController>
     {
         playerControls.Combat.Dash.performed += _ => Dash();
         startingMoveSpeed = movespeed;
+        ActiveInventory.Instance.EquipStartingWeapon();
     }
 
     private void OnEnable()
     {
         playerControls.Enable();
+    }
+    private void OnDisable()
+    {
+        playerControls.Disable();
     }
 
     private void Update()
@@ -70,7 +75,7 @@ public class PlayerController : Singleton<PlayerController>
 
     void Move()
     {
-        if (knockBack.gettingKnockedBack)
+        if (knockBack.gettingKnockedBack || PlayerHealth.Instance.IsDead)
         {
             return;
         }
@@ -103,8 +108,9 @@ public class PlayerController : Singleton<PlayerController>
 
     private void Dash()
     {
-        if (isDashing)
+        if (isDashing && Stamina.Instance.CurrentStamina > 0)
         {
+            Stamina.Instance.UseStamina();
             isDashing = false;
             StartCoroutine(Dashing());
         }
